@@ -16,6 +16,7 @@ interface IUser {
     email: string;
     firstName: string | null;
     lastName: string | null;
+    role?: TRole; //back-end trả về từ khi thêm phân hệ ERP
     createdAt: string;
 }
 

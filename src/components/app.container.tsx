@@ -7,20 +7,22 @@ import { ToastContainer } from 'react-toastify';
 const AppContainer = ({ children }: { children: React.ReactNode }) => {
     return (
         <>
-            <Container style={{ minHeight: 'calc(100vh - 106px)' }}>
+            {/* main là mốc điều hướng cho trình đọc màn hình và cho
+                liên kết "Bỏ qua tới nội dung" ở đầu trang.
+                flex-grow đẩy chân trang xuống đáy thay vì tính chiều cao bằng tay */}
+            <Container as="main" id="wc-main" className="flex-grow-1 py-4">
                 {children}
             </Container>
             <ToastContainer
                 position="bottom-center"
-                autoClose={3000}
-                hideProgressBar={false}
-                newestOnTop={false}
+                autoClose={4000}
+                newestOnTop
                 closeOnClick
-                rtl={false}
                 pauseOnFocusLoss
-                draggable
                 pauseOnHover
                 theme="light"
+                //trình đọc màn hình đọc thông báo ngay khi nó xuất hiện
+                role="status"
             />
         </>
     )

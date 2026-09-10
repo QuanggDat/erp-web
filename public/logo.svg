@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40" role="img" aria-label="Wecare ERP">
+  <!--
+    Logo tạm cho dự án học, vẽ theo bảng màu Wecare (#3492AB).
+    Hình khối hộp có dấu tích: hàng hoá trong kho đã được xác nhận.
+    Muốn thay bằng logo thật của công ty thì ghi đè file này,
+    logo thật nằm trên Dataverse nên phải tải về trước.
+  -->
+  <rect width="40" height="40" rx="9" fill="#3492AB"/>
+  <path d="M20 7.5 31 13.2v13.6L20 32.5 9 26.8V13.2z"
+        fill="none" stroke="#C5E0E8" stroke-width="2"
+        stroke-linejoin="round"/>
+  <path d="M14.5 19.8 18.6 24 26 16.2"
+        fill="none" stroke="#FFFFFF" stroke-width="3"
+        stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
