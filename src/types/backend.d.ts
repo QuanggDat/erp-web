@@ -23,3 +23,16 @@ interface IUser {
 interface ILogin {
     accessToken: string;
 }
+
+//Back-end trả về dạng { items, meta } cho route có phân trang: GET /notes?page=1&limit=10
+interface IPaginationMeta {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+}
+
+interface IPaginated<T> {
+    items: T[];
+    meta: IPaginationMeta;
+}

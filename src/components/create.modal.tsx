@@ -4,16 +4,18 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
-import { mutate } from "swr";
 import { API_URL, sendRequest } from '@/utils/api';
+import { mutateBlogs } from '@/utils/mutate.blogs';
 
 interface IProps {
     showModalCreate: boolean;
     setShowModalCreate: (value: boolean) => void;
+    //báo cho trang cha nhảy về trang 1, nơi blog mới nhất nằm
+    onCreated: () => void;
 }
 
 function CreateModal(props: IProps) {
-    const { showModalCreate, setShowModalCreate } = props;
+    const { showModalCreate, setShowModalCreate, onCreated } = props;
 
     //3 field này khớp đúng với InsertNoteDTO ở back-end
     const [title, setTitle] = useState<string>("");
@@ -46,7 +48,8 @@ function CreateModal(props: IProps) {
             if (res?.id) {
                 toast.success("Tạo blog mới thành công !");
                 handleCloseModal();
-                mutate(`${API_URL}/notes`);
+                await mutateBlogs();
+                onCreated();
             }
         } catch (error: any) {
             toast.error(error.message);

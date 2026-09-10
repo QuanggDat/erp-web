@@ -4,8 +4,8 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { mutate } from "swr";
 import { API_URL, sendRequest } from '@/utils/api';
+import { mutateBlogs } from '@/utils/mutate.blogs';
 
 interface IProps {
     showModalUpdate: boolean;
@@ -57,7 +57,7 @@ function UpdateModal(props: IProps) {
             if (res?.id) {
                 toast.warning("Cập nhật blog thành công !");
                 handleCloseModal();
-                mutate(`${API_URL}/notes`);
+                mutateBlogs();
             }
         } catch (error: any) {
             toast.error(error.message);

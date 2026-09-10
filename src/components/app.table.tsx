@@ -6,15 +6,18 @@ import { useState } from 'react';
 import UpdateModal from './update.modal';
 import Link from 'next/link';
 import { toast } from 'react-toastify';
-import { mutate } from "swr";
 import { API_URL, sendRequest } from '@/utils/api';
+import { mutateBlogs } from '@/utils/mutate.blogs';
 
 interface IProps {
-    blogs: IBlog[]
+    blogs: IBlog[];
+    page: number;
+    limit: number;
+    onCreated: () => void;
 }
 
 const AppTable = (props: IProps) => {
-    const { blogs } = props;
+    const { blogs, page, limit, onCreated } = props;
 
     const [blog, setBlog] = useState<IBlog | null>(null);
     const [showModalCreate, setShowModalCreate] = useState<boolean>(false);
@@ -29,8 +32,8 @@ const AppTable = (props: IProps) => {
                     method: "DELETE"
                 });
                 toast.success("Xoá blog thành công !");
-                //gọi lại GET /notes để làm mới bảng
-                mutate(`${API_URL}/notes`);
+                //xoá một bản ghi làm lệch mọi trang phía sau, nên làm mới toàn bộ cache danh sách
+                mutateBlogs();
             } catch (error: any) {
                 toast.error(error.message);
             }
@@ -57,10 +60,18 @@ const AppTable = (props: IProps) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {blogs.map(item => {
+                    {blogs.length === 0 &&
+                        <tr>
+                            <td colSpan={4} className='text-center text-muted'>
+                                Không có dữ liệu
+                            </td>
+                        </tr>
+                    }
+                    {blogs.map((item, index) => {
                         return (
                             <tr key={item.id}>
-                                <td>{item.id}</td>
+                                {/* số thứ tự chạy liên tục giữa các trang, không phải id */}
+                                <td>{(page - 1) * limit + index + 1}</td>
                                 <td>{item.title}</td>
                                 <td>{item.description}</td>
                                 <td>
@@ -86,6 +97,7 @@ const AppTable = (props: IProps) => {
             <CreateModal
                 showModalCreate={showModalCreate}
                 setShowModalCreate={setShowModalCreate}
+                onCreated={onCreated}
             />
             <UpdateModal
                 showModalUpdate={showModalUpdate}

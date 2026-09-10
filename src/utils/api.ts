@@ -60,3 +60,7 @@ export const sendRequest = async <T>(props: {
 
     return data as T;
 }
+
+//Key SWR của danh sách blog: kèm page/limit nên mỗi trang là một cache riêng
+export const blogsKey = (page: number, limit: number) =>
+    `${API_URL}/notes?page=${page}&limit=${limit}`;
