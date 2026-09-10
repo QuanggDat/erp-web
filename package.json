@@ -1,6 +1,7 @@
 {
-  "name": "nextjs-blogs-management",
+  "name": "erp-web",
   "version": "0.1.0",
+  "description": "Giao diện web cho hệ thống ERP, gọi API của erp-api",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3001",

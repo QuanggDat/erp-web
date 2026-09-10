@@ -1,6 +1,7 @@
-# Wecare ERP
+# erp-web
 
-Front-end Next.js 13 (App Router) gọi API back-end NestJS.
+Giao diện web cho hệ thống ERP, viết bằng Next.js 13 (App Router).
+API nằm ở repo [`erp-api`](https://github.com/QuanggDat/erp-api).
 
 Gồm hai khu vực tách riêng theo route:
 
@@ -15,11 +16,11 @@ khu vực ERP, và trang Blog có liên kết quay về ERP.
 
 ## Kiến trúc
 
-| Thành phần | Đường dẫn | Port |
+| Thành phần | Repo | Port |
 |---|---|---|
-| Front-end (Next.js) | `NextJS-Blogs-Management` | **3001** |
-| Back-end (NestJS)   | `NestJS-RestAPI`          | **3000** |
-| Database (Postgres) | docker `dev-database`     | 5434 |
+| Front-end (Next.js) | `erp-web` | **3001** |
+| Back-end (NestJS)   | `erp-api` | **3000** |
+| Database (Postgres) | docker `dev-database` | 5434 |
 
 Front-end chạy port 3001 để không đụng port 3000 của back-end.
 
@@ -27,19 +28,18 @@ Front-end chạy port 3001 để không đụng port 3000 của back-end.
 
 **1. Bật database** (nếu chưa chạy):
 ```bash
-cd D:/WeCareDoc/react/NestJS-RestAPI
+cd ../erp-api
 npm run db:dev:create
 ```
 
 **2. Bật back-end** (cửa sổ terminal riêng):
 ```bash
-cd D:/WeCareDoc/react/NestJS-RestAPI
+cd ../erp-api
 npm run start:dev
 ```
 
 **3. Bật front-end** (cửa sổ terminal riêng):
 ```bash
-cd D:/WeCareDoc/react/NextJS-Blogs-Management
 npm install
 npm run dev
 ```
