@@ -95,6 +95,10 @@ interface IOrderItem {
     amount: string;
     productId: number;
     product?: Pick<IProduct, "id" | "code" | "name" | "unit">;
+    //Giá vốn chỉ có trên dòng của đơn BÁN, và chỉ sau khi đơn được xác nhận.
+    //Đơn còn nháp thì bằng "0" vì hàng chưa rời kho nên chưa biết giá vốn.
+    unitCost?: string;
+    costAmount?: string;
 }
 
 interface IPurchaseOrder {
@@ -120,6 +124,8 @@ interface ISalesOrder {
     orderDate: string;
     status: TOrderStatus;
     totalAmount: string;
+    //Tổng giá vốn hàng bán, ghi lúc xác nhận đơn. Lãi gộp = totalAmount - totalCost
+    totalCost: string;
     note: string | null;
     customerId: number;
     warehouseId: number;
@@ -174,3 +180,44 @@ interface IAttendance {
 //CỐ Ý KHÔNG CÓ kiểu IPayroll: tiền lương là dữ liệu nhạy cảm, đã được gỡ
 //khỏi cả database, API lẫn giao diện. Phân hệ nhân sự chỉ quản lý hồ sơ,
 //phòng ban, chức danh và chấm công.
+
+//===== BÁO CÁO LÃI LỖ =====
+
+//Một dòng trong bảng lãi lỗ gom theo sản phẩm
+interface IProfitByProduct {
+    productId: number;
+    code: string;
+    name: string;
+    unit: string;
+    quantity: string;
+    revenue: string;
+    cost: string;
+    profit: string;
+    marginPercent: number;
+}
+
+//Một dòng trong bảng lãi lỗ theo từng đơn bán
+interface IProfitByOrder {
+    id: number;
+    code: string;
+    orderDate: string;
+    customer?: Pick<IPartner, "id" | "code" | "name">;
+    warehouse?: Pick<IWarehouse, "id" | "code" | "name">;
+    revenue: string;
+    cost: string;
+    profit: string;
+    marginPercent: number;
+}
+
+//Kết quả trả về của GET /reports/profit
+interface IProfitReport {
+    summary: {
+        orderCount: number;
+        revenue: string;
+        cost: string;
+        profit: string;
+        marginPercent: number;
+    };
+    products: IProfitByProduct[];
+    orders: IProfitByOrder[];
+}
