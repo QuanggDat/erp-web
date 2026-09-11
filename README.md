@@ -60,16 +60,36 @@ Mở trình duyệt: http://localhost:3001
 
 ## API back-end được sử dụng
 
-| Chức năng | Method | Endpoint | Cần token |
-|---|---|---|---|
-| Đăng ký | POST | `/auth/register` | Không |
-| Đăng nhập | POST | `/auth/login` | Không |
-| Thông tin user | GET | `/users/me` | Có |
-| Danh sách blog | GET | `/notes` | Có |
-| Chi tiết blog | GET | `/notes/:id` | Có |
-| Tạo blog | POST | `/notes` | Có |
-| Sửa blog | PATCH | `/notes/:id` | Có |
-| Xoá blog | DELETE | `/notes/:id` | Có |
+Danh sách đầy đủ kèm mô tả từng tham số nằm ở README của [`erp-api`](https://github.com/QuanggDat/erp-api).
+Dưới đây là những endpoint mà giao diện này gọi tới.
+
+**Xác thực** (không cần token)
+
+| Màn hình | Method | Endpoint |
+|---|---|---|
+| Đăng ký | POST | `/auth/register` |
+| Đăng nhập | POST | `/auth/login` |
+| Thanh điều hướng | GET | `/users/me` |
+
+**ERP** (bắt buộc gửi token)
+
+| Màn hình | Endpoint gốc | Ghi chú |
+|---|---|---|
+| Sản phẩm | `/products` | kèm `/products/categories` cho nhóm hàng |
+| Đối tác | `/partners` | lọc `?type=CUSTOMER` lấy cả loại `BOTH` |
+| Kho | `/warehouses` | |
+| Tồn kho | `/warehouses/stocks` | kèm `/stocks/adjust` để kiểm kê |
+| Sổ nhập xuất | `/warehouses/stock-movements` | chỉ đọc |
+| Mua hàng | `/purchase-orders` | thêm `/:id/confirm` và `/:id/cancel` |
+| Bán hàng | `/sales-orders` | thêm `/:id/confirm` và `/:id/cancel` |
+| Nhân viên | `/hr/employees` | |
+| Phòng ban, chức danh | `/hr/departments`, `/hr/positions` | |
+| Chấm công | `/hr/attendances` | |
+
+**Blog** (phần cũ): `/notes` với đủ bốn thao tác thêm, sửa, xoá, xem.
+
+Mọi endpoint danh sách đều trả về `{ items, meta }` và nhận `?page`, `?limit`.
+Hook `useErpList` đã xử lý sẵn việc này.
 
 ## Cấu trúc thư mục
 
@@ -78,6 +98,7 @@ src/
 ├── app/
 │   ├── layout.tsx              # layout gốc: header + container + footer
 │   ├── brand.css               # HỆ THỐNG THIẾT KẾ: màu, thang chữ, giãn cách
+│   ├── globals.css             # reset nhỏ, chạy trước brand.css
 │   ├── page.tsx                # dự phòng, thực tế "/" đã chuyển sang /erp
 │   ├── auth/
 │   │   ├── login/page.tsx
@@ -85,7 +106,7 @@ src/
 │   ├── blogs/                  # PHẦN CŨ, tách riêng khỏi ERP
 │   │   ├── layout.tsx          # kèm liên kết quay về ERP
 │   │   ├── page.tsx            # danh sách blog (SWR)
-│   │   └── [id]/page.tsx       # chi tiết blog
+│   │   └── [id]/                # chi tiết blog
 │   └── erp/                    # KHU VỰC ERP
 │       ├── layout.tsx          # thanh bên trái + nội dung bên phải
 │       ├── page.tsx            # bảng điều khiển
@@ -129,12 +150,6 @@ src/
     └── use.erp.list.ts         # hook dùng chung cho mọi màn hình danh sách
 ```
 
-## Lưu ý về field của Blog
-
-Bảng `notes` ở back-end có 3 field bắt buộc: **title**, **description**, **url**.
-Field `url` được back-end validate bằng `@IsUrl()` nên phải nhập đúng dạng
-`https://example.com`, nếu không sẽ bị trả lỗi 400.
-
 ## Khu vực ERP
 
 Đây là phần chính của hệ thống, có thanh menu riêng bên trái. Mở trang web lên
@@ -148,18 +163,33 @@ là vào thẳng đây.
 thao tác ghi còn yêu cầu đúng vai trò. Tài khoản mới mặc định là `VIEWER` nên
 chỉ xem được. Cách nâng vai trò xem README của back-end.
 
-### Ba thành phần dùng chung
+### Các thành phần dùng chung
 
-Mười hai màn hình ERP đều dựng từ ba mảnh này, nên đọc hiểu ba file là hiểu
-được cả khu vực:
+Mười hai màn hình ERP đều dựng từ cùng một bộ thành phần. Đọc hiểu ba cái đầu
+là hiểu được cả khu vực, ba cái sau chỉ là chi tiết bổ trợ.
+
+**Ba cái cốt lõi:**
 
 - `useErpList` gom việc phân trang, tìm kiếm và gọi API. Đổi bộ lọc thì key
   của SWR đổi theo, SWR tự gọi lại API. Không màn hình nào phải tự viết lại
   đoạn quản lý trang.
-- `ErpPage` là khung ngoài: tiêu đề, nút hành động, ô tìm kiếm, trạng thái
-  đang tải, báo lỗi và thanh phân trang. Màn hình con chỉ cần lo phần bảng.
+- `ErpPage` là khung ngoài: tiêu đề, mô tả mục đích, nút hành động, ô tìm kiếm,
+  trạng thái đang tải, báo lỗi và thanh phân trang. Màn hình con chỉ lo phần bảng.
 - `ErpFormModal` nhận một mảng mô tả các ô nhập rồi tự dựng biểu mẫu. Nhờ vậy
   không phải viết mười modal gần giống nhau.
+
+**Ba cái bổ trợ:**
+
+- `ErpAuthGuard` bọc quanh layout ERP, chặn truy cập khi chưa đăng nhập. Đặt ở
+  layout nên cả mười hai màn hình được bảo vệ một lần.
+- `ErpTableSkeleton` hiện khung xương lúc chờ dữ liệu, thay cho vòng xoay.
+- `ErpEmpty` hiện khi bảng trống, phân biệt hai trường hợp: chưa có dữ liệu nào
+  (đưa nút tạo mới) và bộ lọc che hết (đưa nút xoá bộ lọc).
+- `ErpBreadcrumb` hiện đường dẫn phân cấp, tự dịch tên đoạn URL sang tiếng Việt.
+
+**Một thành phần riêng cho chứng từ:** `OrderItemsEditor` là bảng nhập các dòng
+hàng, dùng chung cho cả đơn mua lẫn đơn bán vì hai bên có cấu trúc dòng giống
+hệt nhau. Chỉ khác ở chỗ đơn mua lấy giá mua làm gợi ý, đơn bán lấy giá bán.
 
 ### Vài điểm cần biết khi đọc code
 
@@ -226,9 +256,21 @@ ty đang làm ở chân trang.
 ### Lưu ý khi thêm CSS toàn cục
 
 File CSS toàn cục **phải đặt trong thư mục `src/app/`**. Next 13 chỉ gom CSS
-đặt ở đó vào gói build. Tôi đã mắc lỗi này một lần: để `brand.css` ở
-`src/styles/` thì build vẫn chạy, không báo lỗi gì, nhưng toàn bộ màu sắc
-không có tác dụng.
+đặt ở đó vào gói build. Để `brand.css` ở `src/styles/` thì build vẫn chạy,
+không báo lỗi gì, nhưng toàn bộ màu sắc không có tác dụng.
+
+**Thứ tự nạp CSS quan trọng.** Xem `src/app/layout.tsx`:
+
+```
+bootstrap.min.css  →  ReactToastify.css  →  globals.css  →  brand.css
+```
+
+`brand.css` phải nạp **cuối cùng** vì nó đè lên biến của Bootstrap. Đảo thứ tự
+là màu thương hiệu mất tác dụng, quay về màu xanh dương mặc định.
+
+Một bẫy nữa: **Bootstrap dựng bo góc nút từ biến riêng của nó**. Đặt
+`border-radius` trực tiếp lên `.btn` sẽ bị đè, phải đặt qua
+`--bs-btn-border-radius`.
 
 ## Hệ thống thiết kế
 
@@ -281,14 +323,6 @@ liệu, con trỏ tự nhảy về ô sai đầu tiên.
 Ô nhập trong `ErpFormModal` nhận thêm thuộc tính `hint` để giải thích trước khi
 người dùng gõ, thay vì để họ nhập xong mới báo sai.
 
-### Ba thành phần mới
-
-- `ErpTableSkeleton` hiện khung xương lúc chờ dữ liệu, thay cho vòng xoay. Bố
-  cục không nhảy khi dữ liệu về, và người dùng cảm thấy nhanh hơn.
-- `ErpEmpty` phân biệt hai trường hợp khác hẳn nhau: chưa có dữ liệu nào (đưa
-  nút tạo mới), và có dữ liệu nhưng bộ lọc che hết (đưa nút xoá bộ lọc).
-- `ErpBreadcrumb` hiện đường dẫn phân cấp, tự dịch tên đoạn URL sang tiếng Việt.
-
 ### Ba mục tiêu không làm được trong code
 
 Yêu cầu ban đầu có 10 mục tiêu. Bảy mục đã làm. Ba mục còn lại nằm ngoài phạm
@@ -301,3 +335,16 @@ vi của code:
    sẵn lúc build, logo là SVG dưới 1KB, có khung xương thay màn hình trắng.
 3. **Bằng chứng xã hội** (một phần mục 9). Đánh giá và case study không áp dụng
    cho hệ thống nội bộ, không có khách hàng bên ngoài để lấy.
+
+## Phần Blog (cũ)
+
+Có từ trước khi dự án chuyển thành ERP, nằm ở `/blogs` và vẫn chạy bình thường.
+Giữ lại vì nó là code mẫu tốt để đối chiếu: cùng một bài toán danh sách và biểu
+mẫu, nhưng viết theo cách cũ, chưa dùng hệ thống thành phần chung của ERP.
+
+Bảng `notes` ở back-end có ba trường bắt buộc: `title`, `description` và `url`.
+Trường `url` validate bằng `@IsUrl()` nên phải đúng dạng `https://example.com`,
+nhập chuỗi thường sẽ bị trả lỗi 400.
+
+Lối vào nằm ở cuối thanh menu bên trái của khu vực ERP. Trang blog có liên kết
+quay về ERP để không bị mắc kẹt, vì nó nằm ngoài layout có menu.
