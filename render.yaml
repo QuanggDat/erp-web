@@ -1,0 +1,22 @@
+# Render Blueprint cho erp-web (giao diện Next.js của hệ thống ERP)
+# Tạo service từ file này: Render Dashboard -> New -> Blueprint -> chọn repo erp-web
+services:
+  - type: web
+    name: erp-web
+    runtime: node
+    plan: free
+    region: singapore # cùng region với erp-api và Neon
+    branch: build-erp-project
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # NODE_ENV=production khiến npm bỏ devDependencies; dự án này để toàn bộ
+      # ở dependencies nên chưa cần, nhưng giữ lại cho chắc khi sau này tách ra
+      - key: NPM_CONFIG_PRODUCTION
+        value: "false"
+      # URL của API. Next nhúng biến NEXT_PUBLIC_* vào bundle lúc build,
+      # nên đổi giá trị này bắt buộc phải build lại, không chỉ restart.
+      - key: NEXT_PUBLIC_API_URL
+        sync: false

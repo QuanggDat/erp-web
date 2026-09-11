@@ -3,11 +3,15 @@
   "version": "0.1.0",
   "description": "Giao diện web cho hệ thống ERP, gọi API của erp-api",
   "private": true,
+  "engines": {
+    "node": ">=18 <25"
+  },
   "scripts": {
     "dev": "next dev -p 3001",
     "build": "next build",
-    "start": "next start -p 3001",
-    "lint": "next lint"
+    "start": "next start",
+    "lint": "next lint",
+    "start:local": "next start -p 3001"
   },
   "dependencies": {
     "@types/node": "20.1.7",
