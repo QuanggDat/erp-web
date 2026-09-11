@@ -90,14 +90,6 @@ const ErpSidebar = () => {
                     </div>
                 );
             })}
-
-            {/* Blog không thuộc phân hệ nào của ERP, nhưng vẫn giữ một lối vào
-                ở cuối menu cho những ai cần dùng tới nó */}
-            <div className="border-top pt-3 mt-3">
-                <Link href="/blogs" className="nav-link text-muted">
-                    Quản lý Blog
-                </Link>
-            </div>
         </nav>
     );
 }

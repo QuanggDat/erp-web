@@ -5,7 +5,6 @@ import ErpSidebar from '@/components/erp/erp.sidebar';
 //Layout riêng cho khu vực ERP.
 //Trên điện thoại menu nằm trong khối gập lại được, nội dung lên trước;
 //từ tablet trở lên menu cố định bên trái.
-//Phần blog không dùng layout này nên vẫn giữ nguyên giao diện cũ.
 export default function ErpLayout({
     children,
 }: {
