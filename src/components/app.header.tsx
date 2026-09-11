@@ -1,4 +1,5 @@
 'use client'
+import Badge from 'react-bootstrap/Badge';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
@@ -8,6 +9,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { API_URL, clearToken, getToken, sendRequest } from '@/utils/api';
+import { ROLE_LABEL } from '@/utils/erp';
 
 const AppHeader = () => {
     const router = useRouter();
@@ -42,28 +44,41 @@ const AppHeader = () => {
     }
 
     return (
-        <Navbar expand="lg" className="bg-body-tertiary">
+        <Navbar expand="lg" className="wc-navbar" variant="dark">
             <Container>
-                <Navbar.Brand>
-                    <Link href={"/"} className="navbar-brand">
-                        Blogs Management
-                    </Link>
+                {/* logo, đường kẻ, tên hệ thống: xếp giống app nội bộ công ty */}
+                <Navbar.Brand
+                    as={Link}
+                    href="/erp"
+                    className="d-flex align-items-center gap-2 fw-semibold"
+                >
+                    {/* dùng thẻ img thường chứ không phải next/image:
+                        đây là ảnh SVG tĩnh nhỏ, không cần tối ưu kích thước */}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/logo.svg" alt="" width={30} height={30} />
+                    <span className="wc-brand-divider d-none d-sm-block" />
+                    <span>Wecare ERP</span>
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
-                    <Nav className="me-auto">
-                        <Link href={"/blogs"} className='nav-link'>
-                            Blogs
-                        </Link>
-                    </Nav>
-                    <Nav>
+                    {/* menu các phân hệ nằm ở thanh bên trái của khu vực ERP */}
+                    <Nav className="me-auto" />
+                    <Nav className="align-items-lg-center">
                         {user
                             ?
                             <>
                                 <Navbar.Text className='me-3'>
-                                    Xin chào, <b>{user.email}</b>
+                                    {user.email}
+                                    {/* vai trò quyết định người dùng thao tác được gì, nên hiện luôn */}
+                                    {user.role &&
+                                        <Badge bg='light' text='dark' className='ms-2 fw-normal'>
+                                            {ROLE_LABEL[user.role]}
+                                        </Badge>
+                                    }
                                 </Navbar.Text>
-                                <Button variant='outline-danger' size='sm'
+                                {/* nút viền trắng thay vì viền đỏ: trên nền xanh đậm
+                                    màu đỏ chỏi và trông như một cảnh báo lỗi */}
+                                <Button variant='outline-light' size='sm'
                                     onClick={() => handleLogout()}
                                 >Đăng xuất</Button>
                             </>

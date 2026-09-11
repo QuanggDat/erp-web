@@ -1,0 +1,668 @@
+/* ==========================================================================
+   HỆ THỐNG THIẾT KẾ WECARE ERP
+
+   Bảng màu và phông chữ lấy theo app nội bộ Accounting-Sales-Purchase-Update
+   để hai hệ thống nhìn giống nhau.
+
+   Ba nguyên tắc xuyên suốt file này:
+   1. Mọi khoảng cách là bội số của 4px, phần lớn là bội số của 8px.
+   2. Mọi cỡ chữ nằm trên một thang tỷ lệ 1.25, không có cỡ tuỳ tiện.
+   3. Mọi cặp màu chữ và nền đều đạt tối thiểu 4.5:1 cho chữ thường.
+   ========================================================================== */
+
+:root {
+  /* ---------- MÀU THƯƠNG HIỆU ----------
+     Lưu ý về độ tương phản trên nền trắng:
+       #3492AB = 3.1:1  -> CHỈ dùng làm NỀN (với chữ trắng), viền, icon lớn
+       #236E84 = 5.4:1  -> đạt chuẩn cho chữ thường
+       #164553 = 9.7:1  -> dùng cho tiêu đề và số liệu quan trọng
+     Không bao giờ đặt chữ thường màu #3492AB lên nền trắng. */
+  --wc-primary: #3492ab;
+  --wc-primary-dark: #236e84;
+  --wc-primary-deep: #164553;
+  --wc-primary-light: #7fbacb;
+  --wc-primary-pale: #c5e0e8;
+  --wc-primary-wash: #eaf4f7;
+
+  /* Nền chân trang và các bề mặt tối */
+  --wc-surface-dark: #0f2a33;
+
+  /* ---------- MÀU TRUNG TÍNH ----------
+     Tỷ lệ 60/30/10: nền trung tính chiếm phần lớn diện tích,
+     bề mặt trắng cho nội dung, màu nhấn chỉ dành cho hành động. */
+  --wc-ink: #212529; /* chữ chính, 15.4:1 trên nền trắng */
+  --wc-ink-soft: #495057; /* chữ phụ, 8.2:1 */
+  /* Chú thích: đậm hơn màu xám quen thuộc #6c757d một chút.
+     Màu đó đạt chuẩn trên nền trắng nhưng chỉ được 4.36:1 trên nền trang,
+     tức là không đạt ở đúng nơi nó xuất hiện nhiều nhất.
+     Màu này đạt 5.26:1 trên nền trắng và 4.90:1 trên nền trang. */
+  --wc-ink-muted: #646d76;
+  --wc-line: #dee2e6; /* đường kẻ, viền */
+  --wc-line-soft: #e9ecef;
+  --wc-surface: #ffffff; /* bề mặt nội dung */
+  --wc-canvas: #f5f7f8; /* nền trang, hơi ngả xanh cho hợp thương hiệu */
+
+  /* ---------- MÀU NGỮ NGHĨA ----------
+     CHỈ dùng cho trạng thái, không dùng trang trí.
+     Mỗi màu có hai sắc: đậm cho chữ, nhạt cho nền. */
+  /* xanh lá đậm hơn mức thường thấy, để đạt 5.16:1 trên nền badge nhạt */
+  --wc-success: #1a7431;
+  --wc-success-bg: #e6f4ea;
+  --wc-warning: #9a6700;
+  --wc-warning-bg: #fff8e1;
+  --wc-danger: #c02828;
+  --wc-danger-bg: #fdecec;
+
+  /* ---------- THANG GIÃN CÁCH (lưới 8px) ----------
+     Dùng biến thay vì số cứng để mọi khoảng cách trong hệ thống ăn khớp. */
+  --wc-space-1: 4px;
+  --wc-space-2: 8px;
+  --wc-space-3: 12px;
+  --wc-space-4: 16px;
+  --wc-space-5: 24px;
+  --wc-space-6: 32px;
+  --wc-space-7: 48px;
+  --wc-space-8: 64px;
+
+  /* ---------- THANG CHỮ (tỷ lệ 1.25) ----------
+     Body 16px là mức tối thiểu cho chữ đọc lâu. */
+  --wc-text-xs: 12px; /* nhãn viết hoa, badge */
+  --wc-text-sm: 14px; /* chú thích, ô nhập phụ */
+  --wc-text-base: 16px; /* nội dung chính */
+  --wc-text-lg: 20px; /* tiêu đề thẻ */
+  --wc-text-xl: 25px; /* tiêu đề trang */
+  --wc-text-2xl: 31px; /* số liệu lớn */
+
+  /* ---------- BO GÓC VÀ ĐỔ BÓNG ----------
+     Chỉ ba mức, dùng nhất quán cho mọi thành phần. */
+  --wc-radius-sm: 6px;
+  --wc-radius: 10px;
+  --wc-radius-lg: 14px;
+  --wc-shadow-sm: 0 1px 2px rgba(22, 69, 83, 0.06);
+  --wc-shadow: 0 2px 8px rgba(22, 69, 83, 0.08);
+  --wc-shadow-lg: 0 8px 24px rgba(22, 69, 83, 0.12);
+
+  /* Vùng chạm tối thiểu trên thiết bị cảm ứng */
+  --wc-touch-target: 44px;
+
+  /* Lexend cho tiêu đề, Roboto cho nội dung.
+     Hai biến --font-* do next/font sinh ra ở layout gốc. */
+  --wc-font-heading: var(--font-lexend), system-ui, -apple-system, 'Segoe UI',
+    sans-serif;
+  --wc-font-body: var(--font-roboto), system-ui, -apple-system, 'Segoe UI',
+    sans-serif;
+}
+
+/* ==========================================================================
+   NỀN TẢNG
+   ========================================================================== */
+
+body {
+  font-family: var(--wc-font-body);
+  font-size: var(--wc-text-base);
+  line-height: 1.6;
+  background-color: var(--wc-canvas);
+  color: var(--wc-ink);
+  /* trang luôn cao ít nhất bằng màn hình để chân trang không lơ lửng */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.navbar-brand {
+  font-family: var(--wc-font-heading);
+  color: var(--wc-primary-deep);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+h1 {
+  font-size: var(--wc-text-xl);
+}
+
+h2,
+h3,
+h4,
+h5 {
+  font-size: var(--wc-text-lg);
+}
+
+/* Đoạn văn dài giới hạn 65 ký tự mỗi dòng cho dễ đọc.
+   Bảng và biểu mẫu không áp dụng vì cần hết chiều ngang. */
+.wc-prose {
+  max-width: 65ch;
+}
+
+/* ==========================================================================
+   KHẢ NĂNG TIẾP CẬN
+   ========================================================================== */
+
+/* Viền focus rõ ràng cho người dùng bàn phím.
+   :focus-visible chứ không phải :focus, để chuột bấm không hiện viền. */
+:focus-visible {
+  outline: 3px solid var(--wc-primary-dark);
+  outline-offset: 2px;
+  border-radius: var(--wc-radius-sm);
+}
+
+/* Liên kết bỏ qua điều hướng: người dùng bàn phím nhấn Tab một lần
+   là nhảy thẳng tới nội dung, không phải đi qua toàn bộ menu */
+.wc-skip-link {
+  position: absolute;
+  left: var(--wc-space-2);
+  top: -100px;
+  z-index: 2000;
+  padding: var(--wc-space-2) var(--wc-space-4);
+  background-color: var(--wc-primary-deep);
+  color: #ffffff;
+  border-radius: var(--wc-radius-sm);
+  text-decoration: none;
+  transition: top 0.15s ease;
+}
+
+.wc-skip-link:focus {
+  top: var(--wc-space-2);
+  color: #ffffff;
+}
+
+/* Chữ chỉ dành cho trình đọc màn hình, không hiện trên giao diện */
+.wc-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Tôn trọng cài đặt giảm chuyển động của hệ điều hành */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Trên thiết bị cảm ứng, mọi nút và liên kết đủ lớn để chạm */
+@media (pointer: coarse) {
+  .btn,
+  .page-link {
+    min-height: var(--wc-touch-target);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* ==========================================================================
+   ĐÈ LÊN BOOTSTRAP
+   Sửa ở tầng biến để mọi thành phần đổi theo, không phải sửa từng chỗ.
+   ========================================================================== */
+
+:root {
+  --bs-primary: var(--wc-primary);
+  --bs-primary-rgb: 52, 146, 171;
+  --bs-link-color: var(--wc-primary-dark);
+  --bs-link-hover-color: var(--wc-primary-deep);
+  --bs-link-color-rgb: 35, 110, 132;
+  --bs-body-font-family: var(--wc-font-body);
+  --bs-body-font-size: var(--wc-text-base);
+  --bs-body-color: var(--wc-ink);
+  --bs-body-bg: var(--wc-canvas);
+  --bs-border-color: var(--wc-line);
+  --bs-secondary-color: var(--wc-ink-muted);
+  --bs-border-radius: var(--wc-radius);
+  --bs-border-radius-sm: var(--wc-radius-sm);
+}
+
+/* ---------- NÚT ----------
+   Một cỡ nút duy nhất cho mọi hành động cùng cấp, bo góc và
+   khoảng đệm giống nhau ở mọi nơi. */
+.btn {
+  font-family: var(--wc-font-body);
+  font-weight: 500;
+  padding: var(--wc-space-2) var(--wc-space-4);
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+  /* Bootstrap dựng bo góc nút từ biến riêng của nó, nên phải đặt qua
+     biến đó chứ không phải border-radius trực tiếp, nếu không sẽ bị đè */
+  --bs-btn-border-radius: var(--wc-radius-sm);
+}
+
+.btn-sm {
+  padding: var(--wc-space-1) var(--wc-space-3);
+  font-size: var(--wc-text-sm);
+  --bs-btn-border-radius: var(--wc-radius-sm);
+}
+
+.btn-primary {
+  --bs-btn-bg: var(--wc-primary-dark);
+  --bs-btn-border-color: var(--wc-primary-dark);
+  --bs-btn-hover-bg: var(--wc-primary-deep);
+  --bs-btn-hover-border-color: var(--wc-primary-deep);
+  --bs-btn-active-bg: var(--wc-primary-deep);
+  --bs-btn-active-border-color: var(--wc-primary-deep);
+  --bs-btn-disabled-bg: var(--wc-primary-light);
+  --bs-btn-disabled-border-color: var(--wc-primary-light);
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--wc-primary-dark);
+  --bs-btn-border-color: var(--wc-primary);
+  --bs-btn-hover-bg: var(--wc-primary-dark);
+  --bs-btn-hover-border-color: var(--wc-primary-dark);
+  --bs-btn-active-bg: var(--wc-primary-deep);
+  --bs-btn-active-border-color: var(--wc-primary-deep);
+}
+
+/* Nút phụ trong bảng: viền xám nhạt, chữ đậm đủ đọc.
+   Không dùng riêng màu để phân biệt vì người mù màu sẽ không thấy khác biệt. */
+.btn-outline-secondary {
+  --bs-btn-color: var(--wc-ink-soft);
+  --bs-btn-border-color: var(--wc-line);
+  --bs-btn-hover-bg: var(--wc-line-soft);
+  --bs-btn-hover-border-color: var(--wc-ink-muted);
+  --bs-btn-hover-color: var(--wc-ink);
+}
+
+.btn-outline-danger {
+  --bs-btn-color: var(--wc-danger);
+  --bs-btn-border-color: var(--wc-line);
+  --bs-btn-hover-bg: var(--wc-danger);
+  --bs-btn-hover-border-color: var(--wc-danger);
+}
+
+.bg-primary {
+  background-color: var(--wc-primary) !important;
+}
+
+/* Chữ màu thương hiệu phải dùng sắc đậm để đạt tương phản */
+.text-primary {
+  color: var(--wc-primary-dark) !important;
+}
+
+.text-muted {
+  color: var(--wc-ink-muted) !important;
+}
+
+/* ---------- Ô NHẬP ---------- */
+.form-control,
+.form-select {
+  border-color: var(--wc-line);
+  border-radius: var(--wc-radius-sm);
+  padding: var(--wc-space-2) var(--wc-space-3);
+  font-size: var(--wc-text-base);
+  color: var(--wc-ink);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--wc-primary);
+  box-shadow: 0 0 0 3px rgba(52, 146, 171, 0.18);
+}
+
+.form-control-sm,
+.form-select-sm {
+  font-size: var(--wc-text-sm);
+  padding: var(--wc-space-1) var(--wc-space-2);
+}
+
+.form-label {
+  font-size: var(--wc-text-sm);
+  font-weight: 500;
+  color: var(--wc-ink-soft);
+  margin-bottom: var(--wc-space-1);
+}
+
+/* Ô nhập sai: viền đỏ VÀ có thông báo bằng chữ bên dưới,
+   không chỉ dựa vào màu để báo lỗi */
+.form-control.is-invalid,
+.form-select.is-invalid {
+  border-color: var(--wc-danger);
+  border-width: 2px;
+}
+
+.wc-field-error {
+  display: block;
+  margin-top: var(--wc-space-1);
+  font-size: var(--wc-text-sm);
+  color: var(--wc-danger);
+}
+
+/* ==========================================================================
+   THANH ĐIỀU HƯỚNG TRÊN CÙNG
+   ========================================================================== */
+
+.wc-navbar {
+  background-color: var(--wc-primary) !important;
+  box-shadow: var(--wc-shadow-sm);
+  padding-block: var(--wc-space-2);
+}
+
+.wc-navbar .navbar-brand,
+.wc-navbar .navbar-text {
+  color: #ffffff;
+}
+
+.wc-navbar .nav-link {
+  color: rgba(255, 255, 255, 0.92);
+  padding-inline: var(--wc-space-3);
+}
+
+.wc-navbar .nav-link:hover,
+.wc-navbar .nav-link:focus {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+.wc-navbar :focus-visible {
+  outline-color: #ffffff;
+}
+
+.wc-brand-divider {
+  width: 1px;
+  height: 24px;
+  background-color: rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   THANH MENU BÊN TRÁI
+   ========================================================================== */
+
+.wc-sidebar {
+  background-color: var(--wc-surface);
+  border: 1px solid var(--wc-line);
+  border-radius: var(--wc-radius);
+  padding: var(--wc-space-3);
+}
+
+.wc-sidebar .wc-group-title {
+  color: var(--wc-ink-muted);
+  font-family: var(--wc-font-heading);
+  font-size: var(--wc-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding-inline: var(--wc-space-2);
+  margin-bottom: var(--wc-space-1);
+}
+
+.wc-sidebar .nav-link {
+  color: var(--wc-ink);
+  font-size: var(--wc-text-sm);
+  padding: var(--wc-space-2) var(--wc-space-3);
+  border-radius: var(--wc-radius-sm);
+  /* thanh chỉ báo bên trái, trong suốt khi chưa chọn để không xô lệch chữ */
+  border-left: 3px solid transparent;
+}
+
+.wc-sidebar .nav-link:hover {
+  background-color: var(--wc-primary-wash);
+  color: var(--wc-primary-deep);
+}
+
+/* Mục đang mở: nền đậm, chữ trắng, VÀ có thanh bên trái.
+   Hai tín hiệu chứ không chỉ màu, để người mù màu vẫn nhận ra. */
+.wc-sidebar .nav-link.wc-active {
+  background-color: var(--wc-primary-dark);
+  color: #ffffff;
+  font-weight: 500;
+  border-left-color: var(--wc-primary-deep);
+}
+
+/* ==========================================================================
+   THẺ NỘI DUNG
+   ========================================================================== */
+
+.card {
+  border: 1px solid var(--wc-line);
+  border-radius: var(--wc-radius);
+  box-shadow: var(--wc-shadow-sm);
+}
+
+.wc-card-header {
+  background-color: var(--wc-surface);
+  border-bottom: 1px solid var(--wc-line);
+  padding: var(--wc-space-4);
+}
+
+.wc-card-header h2,
+.wc-card-header h5 {
+  color: var(--wc-primary-deep);
+  font-size: var(--wc-text-lg);
+  margin: 0;
+}
+
+/* ==========================================================================
+   BẢNG DỮ LIỆU
+   ========================================================================== */
+
+.table {
+  --bs-table-border-color: var(--wc-line-soft);
+  margin-bottom: 0;
+  font-size: var(--wc-text-sm);
+}
+
+.table > thead {
+  background-color: var(--wc-primary-wash);
+}
+
+.table > thead th {
+  color: var(--wc-primary-deep);
+  font-weight: 600;
+  font-size: var(--wc-text-xs);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: var(--wc-space-3);
+  border-bottom: 2px solid var(--wc-primary-pale);
+}
+
+.table > tbody td {
+  padding: var(--wc-space-3);
+  vertical-align: middle;
+  color: var(--wc-ink);
+}
+
+/* Cột số liệu dùng chữ số đều nhau để các hàng thẳng cột */
+.wc-num {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ---------- BẢNG THÀNH THẺ TRÊN MÀN HÌNH NHỎ ----------
+   Dưới 768px, mỗi dòng bảng xếp thành một thẻ dọc.
+   Nhãn cột lấy từ thuộc tính data-label trên mỗi ô. */
+@media (max-width: 767.98px) {
+  .wc-table-cards thead {
+    /* ẩn khỏi mắt nhưng vẫn giữ cho trình đọc màn hình */
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+
+  .wc-table-cards,
+  .wc-table-cards tbody,
+  .wc-table-cards tr,
+  .wc-table-cards td {
+    display: block;
+    width: 100%;
+  }
+
+  .wc-table-cards tr {
+    background-color: var(--wc-surface);
+    border: 1px solid var(--wc-line);
+    border-radius: var(--wc-radius);
+    margin-bottom: var(--wc-space-3);
+    padding: var(--wc-space-2);
+  }
+
+  .wc-table-cards td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--wc-space-3);
+    border: 0;
+    border-bottom: 1px solid var(--wc-line-soft);
+    padding: var(--wc-space-2) var(--wc-space-1);
+    text-align: right;
+  }
+
+  .wc-table-cards td:last-child {
+    border-bottom: 0;
+  }
+
+  /* nhãn cột hiện bên trái mỗi giá trị */
+  .wc-table-cards td::before {
+    content: attr(data-label);
+    font-size: var(--wc-text-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--wc-ink-muted);
+    text-align: left;
+    flex-shrink: 0;
+  }
+
+  /* ô không có nhãn, ví dụ cột thao tác, chiếm cả hàng */
+  .wc-table-cards td[data-label='']::before {
+    content: none;
+  }
+
+  .wc-table-cards td[data-label=''] {
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: var(--wc-space-2);
+  }
+
+  .wc-num {
+    text-align: right;
+  }
+}
+
+/* ==========================================================================
+   HUY HIỆU TRẠNG THÁI
+   Mỗi trạng thái có màu VÀ chữ, không bao giờ chỉ có màu.
+   ========================================================================== */
+
+.badge {
+  font-weight: 500;
+  font-size: var(--wc-text-xs);
+  padding: var(--wc-space-1) var(--wc-space-2);
+  border-radius: var(--wc-radius-sm);
+}
+
+.wc-badge-success {
+  background-color: var(--wc-success-bg);
+  color: var(--wc-success);
+  border: 1px solid rgba(26, 116, 49, 0.3);
+}
+
+.wc-badge-warning {
+  background-color: var(--wc-warning-bg);
+  color: var(--wc-warning);
+  border: 1px solid rgba(154, 103, 0, 0.25);
+}
+
+.wc-badge-danger {
+  background-color: var(--wc-danger-bg);
+  color: var(--wc-danger);
+  border: 1px solid rgba(192, 40, 40, 0.25);
+}
+
+.wc-badge-neutral {
+  background-color: var(--wc-line-soft);
+  color: var(--wc-ink-soft);
+  border: 1px solid var(--wc-line);
+}
+
+/* ==========================================================================
+   KHUNG XƯƠNG KHI ĐANG TẢI
+   Hiện hình dạng nội dung sắp tới thay vì màn hình trắng,
+   người dùng cảm thấy nhanh hơn dù thời gian thật không đổi.
+   ========================================================================== */
+
+.wc-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--wc-line-soft) 25%,
+    #f1f3f5 50%,
+    var(--wc-line-soft) 75%
+  );
+  background-size: 200% 100%;
+  animation: wc-shimmer 1.4s ease-in-out infinite;
+  border-radius: var(--wc-radius-sm);
+}
+
+@keyframes wc-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ==========================================================================
+   TRẠNG THÁI RỖNG
+   Nói rõ vì sao trống và bước tiếp theo là gì, thay vì một dòng chữ cụt.
+   ========================================================================== */
+
+.wc-empty {
+  text-align: center;
+  padding: var(--wc-space-7) var(--wc-space-4);
+  color: var(--wc-ink-muted);
+}
+
+.wc-empty-title {
+  font-family: var(--wc-font-heading);
+  font-size: var(--wc-text-base);
+  color: var(--wc-ink-soft);
+  margin-bottom: var(--wc-space-1);
+}
+
+/* ==========================================================================
+   CHÂN TRANG
+   ========================================================================== */
+
+.wc-footer {
+  background-color: var(--wc-surface-dark);
+  border-top: 3px solid var(--wc-primary);
+  color: rgba(255, 255, 255, 0.75);
+  padding-block: var(--wc-space-4);
+  margin-top: auto;
+  font-size: var(--wc-text-sm);
+}
+
+.wc-footer .wc-footer-brand {
+  color: #ffffff;
+}
+
+.wc-footer .wc-footer-muted {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.wc-footer a {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.wc-footer :focus-visible {
+  outline-color: #ffffff;
+}

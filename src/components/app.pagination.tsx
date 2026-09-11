@@ -38,38 +38,49 @@ const AppPagination = (props: IProps) => {
     if (totalPages <= 1) return null;
 
     return (
-        <Pagination className='justify-content-center mt-3'>
-            <Pagination.First
-                disabled={page <= 1}
-                onClick={() => onChange(1)}
-            />
-            <Pagination.Prev
-                disabled={page <= 1}
-                onClick={() => onChange(page - 1)}
-            />
+        //nav với nhãn để trình đọc màn hình biết đây là điều hướng phân trang.
+        //Các nút mũi tên chỉ có biểu tượng nên cần aria-label mô tả bằng chữ.
+        <nav aria-label="Phân trang">
+            <Pagination className='mb-0'>
+                <Pagination.First
+                    disabled={page <= 1}
+                    onClick={() => onChange(1)}
+                    aria-label="Về trang đầu"
+                />
+                <Pagination.Prev
+                    disabled={page <= 1}
+                    onClick={() => onChange(page - 1)}
+                    aria-label="Trang trước"
+                />
 
-            {buildPageItems(page, totalPages).map((item, index) => {
-                if (item === "...") {
-                    return <Pagination.Ellipsis key={`gap-${index}`} disabled />
-                }
-                return (
-                    <Pagination.Item
-                        key={item}
-                        active={item === page}
-                        onClick={() => onChange(item)}
-                    >{item}</Pagination.Item>
-                )
-            })}
+                {buildPageItems(page, totalPages).map((item, index) => {
+                    if (item === "...") {
+                        return <Pagination.Ellipsis key={`gap-${index}`} disabled />
+                    }
+                    return (
+                        <Pagination.Item
+                            key={item}
+                            active={item === page}
+                            onClick={() => onChange(item)}
+                            aria-label={`Trang ${item}`}
+                            //aria-current cho biết đang ở trang nào
+                            aria-current={item === page ? 'page' : undefined}
+                        >{item}</Pagination.Item>
+                    )
+                })}
 
-            <Pagination.Next
-                disabled={page >= totalPages}
-                onClick={() => onChange(page + 1)}
-            />
-            <Pagination.Last
-                disabled={page >= totalPages}
-                onClick={() => onChange(totalPages)}
-            />
-        </Pagination>
+                <Pagination.Next
+                    disabled={page >= totalPages}
+                    onClick={() => onChange(page + 1)}
+                    aria-label="Trang sau"
+                />
+                <Pagination.Last
+                    disabled={page >= totalPages}
+                    onClick={() => onChange(totalPages)}
+                    aria-label="Tới trang cuối"
+                />
+            </Pagination>
+        </nav>
     )
 }
 
