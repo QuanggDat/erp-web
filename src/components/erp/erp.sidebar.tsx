@@ -25,6 +25,7 @@ const MENU: { group: string; items: { href: string; label: string }[] }[] = [
             { href: "/erp/warehouses", label: "Danh sách kho" },
             { href: "/erp/stocks", label: "Tồn kho" },
             { href: "/erp/inventory-value", label: "Giá trị tồn kho" },
+            { href: "/erp/cogs-monthly", label: "Giá vốn theo tháng" },
             { href: "/erp/stock-movements", label: "Sổ nhập xuất" },
         ],
     },

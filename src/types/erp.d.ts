@@ -215,3 +215,37 @@ interface IInventoryValueReport {
     items: IInventoryValueItem[];
     byWarehouse: IInventoryValueByWarehouse[];
 }
+
+//===== BÁO CÁO GIÁ VỐN THEO THÁNG =====
+
+//Một dòng: một sản phẩm trong một tháng.
+//Sản phẩm bán ở ba tháng thì có ba dòng.
+interface ICogsMonthlyRow {
+    month: string;    //dạng YYYY-MM
+    productId: number;
+    code: string;
+    name: string;
+    unit: string;
+    quantity: string; //số lượng bán trong tháng đó
+    unitCost: string; //đơn giá vốn bình quân trong tháng đó
+    cost: string;     //tổng giá vốn
+}
+
+//Tổng giá vốn của từng tháng
+interface ICogsByMonth {
+    month: string;
+    cost: string;
+}
+
+//Kết quả trả về của GET /reports/cogs-monthly
+interface ICogsMonthlyReport {
+    summary: {
+        rowCount: number;
+        quantity: string;
+        cost: string;
+    };
+    rows: ICogsMonthlyRow[];
+    byMonth: ICogsByMonth[];
+    //Các tháng có đơn đã xác nhận, mới nhất trước
+    months: string[];
+}
