@@ -7,20 +7,25 @@ import ErpPage from '@/components/erp/erp.page';
 import { API_URL, sendRequest } from '@/utils/api';
 import { formatDate, formatMoney, formatQuantity } from '@/utils/erp';
 
-//Mặc định lấy 30 ngày gần nhất: khoảng vừa đủ để thấy xu hướng mà không
-//phải chờ lâu, và người dùng vẫn đổi được ngày ngay trên màn hình.
-const today = new Date();
-const monthAgo = new Date();
-monthAgo.setDate(monthAgo.getDate() - 30);
-const toInput = (d: Date) => d.toISOString().slice(0, 10);
+//Tháng hiện tại, dạng YYYY-MM để khớp tham số month của back-end
+const thangHienTai = () => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+
+//"2026-09" hiện thành "Tháng 09/2026" cho dễ đọc
+const nhanThang = (m: string) => {
+    const [y, mm] = m.split("-");
+    return `Tháng ${mm}/${y}`;
+}
 
 //Lãi thì xanh, lỗ thì đỏ. Dùng chung cho cả số tiền lẫn tỷ suất.
 const profitClass = (value: number) =>
     value < 0 ? 'text-danger' : 'text-success';
 
 const ProfitReportPage = () => {
-    const [fromDate, setFromDate] = useState<string>(toInput(monthAgo));
-    const [toDate, setToDate] = useState<string>(toInput(today));
+    //Rỗng nghĩa là xem toàn bộ, không giới hạn tháng nào
+    const [month, setMonth] = useState<string>(thangHienTai());
     const [warehouseId, setWarehouseId] = useState<string>("");
     //hai cách nhìn cùng một số liệu: theo mặt hàng, hoặc theo từng đơn
     const [view, setView] = useState<"product" | "order">("product");
@@ -28,8 +33,7 @@ const ProfitReportPage = () => {
     const fetcher = (url: string) => sendRequest<any>({ url, method: "GET" });
 
     const params = new URLSearchParams();
-    if (fromDate) params.set("fromDate", fromDate);
-    if (toDate) params.set("toDate", toDate);
+    if (month) params.set("month", month);
     if (warehouseId) params.set("warehouseId", warehouseId);
 
     const { data, error, isLoading } = useSWR<IProfitReport>(
@@ -41,23 +45,25 @@ const ProfitReportPage = () => {
     const summary = data?.summary;
     const profit = Number(summary?.profit ?? 0);
 
+    //Danh sách tháng do back-end trả về, chỉ gồm tháng thật sự có đơn.
+    //Thêm tháng đang chọn vào nếu nó chưa có, để ô select không nhảy về rỗng
+    //khi người dùng chọn một tháng không phát sinh đơn nào.
+    const dsThang = [...(data?.months ?? [])];
+    if (month && !dsThang.includes(month)) dsThang.unshift(month);
+
     const filters = (
         <>
             <Form.Group>
-                <Form.Label className="small text-muted mb-1">Từ ngày</Form.Label>
-                <Form.Control
-                    type="date"
-                    value={fromDate}
-                    onChange={e => setFromDate(e.target.value)}
-                />
-            </Form.Group>
-            <Form.Group>
-                <Form.Label className="small text-muted mb-1">Đến ngày</Form.Label>
-                <Form.Control
-                    type="date"
-                    value={toDate}
-                    onChange={e => setToDate(e.target.value)}
-                />
+                <Form.Label className="small text-muted mb-1">Tháng</Form.Label>
+                <Form.Select
+                    value={month}
+                    onChange={e => setMonth(e.target.value)}
+                >
+                    <option value="">Tất cả các tháng</option>
+                    {dsThang.map(m => (
+                        <option key={m} value={m}>{nhanThang(m)}</option>
+                    ))}
+                </Form.Select>
             </Form.Group>
             <Form.Group>
                 <Form.Label className="small text-muted mb-1">Kho</Form.Label>
@@ -91,7 +97,7 @@ const ProfitReportPage = () => {
             filters={filters}
             isLoading={isLoading}
             error={error}
-            skeletonColumns={6}
+            skeletonColumns={7}
         >
             {summary &&
                 <div className="row g-3 mb-4">
@@ -122,7 +128,7 @@ const ProfitReportPage = () => {
                                 {summary.marginPercent}%
                             </div>
                             <div className="small text-muted">
-                                {summary.orderCount} đơn đã xác nhận
+                                {summary.orderCount} đơn · {month ? nhanThang(month) : "toàn bộ"}
                             </div>
                         </div>
                     </div>
@@ -146,8 +152,10 @@ const ProfitReportPage = () => {
                         {(data?.products ?? []).length === 0 &&
                             <ErpEmpty
                                 colSpan={7}
-                                title="Chưa có số liệu trong khoảng thời gian này"
-                                hint="Báo cáo chỉ tính đơn bán đã xác nhận. Thử nới rộng khoảng ngày hoặc bỏ lọc kho."
+                                title={month
+                                    ? `Không có đơn bán nào trong ${nhanThang(month).toLowerCase()}`
+                                    : "Chưa có đơn bán nào được xác nhận"}
+                                hint="Báo cáo chỉ tính đơn bán đã xác nhận. Thử chọn tháng khác hoặc bỏ lọc kho."
                             />
                         }
                         {(data?.products ?? []).map(p => (
@@ -188,8 +196,10 @@ const ProfitReportPage = () => {
                         {(data?.orders ?? []).length === 0 &&
                             <ErpEmpty
                                 colSpan={7}
-                                title="Chưa có số liệu trong khoảng thời gian này"
-                                hint="Báo cáo chỉ tính đơn bán đã xác nhận. Thử nới rộng khoảng ngày hoặc bỏ lọc kho."
+                                title={month
+                                    ? `Không có đơn bán nào trong ${nhanThang(month).toLowerCase()}`
+                                    : "Chưa có đơn bán nào được xác nhận"}
+                                hint="Báo cáo chỉ tính đơn bán đã xác nhận. Thử chọn tháng khác hoặc bỏ lọc kho."
                             />
                         }
                         {(data?.orders ?? []).map(o => (

@@ -220,4 +220,7 @@ interface IProfitReport {
     };
     products: IProfitByProduct[];
     orders: IProfitByOrder[];
+    //Các tháng có đơn đã xác nhận, dạng YYYY-MM, mới nhất trước.
+    //Back-end trả kèm để dựng ô chọn tháng, khỏi phải gọi thêm một lượt.
+    months: string[];
 }
