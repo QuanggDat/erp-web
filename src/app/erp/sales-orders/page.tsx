@@ -35,13 +35,9 @@ const SalesOrdersPage = () => {
     const [detail, setDetail] = useState<ISalesOrder | null>(null);
 
     //Giá vốn chỉ được ghi khi đơn được xác nhận, lúc hàng thật sự rời kho.
-    //Đơn nháp hoặc đơn huỷ không có số liệu nên ẩn hẳn hai cột, hiện số 0
+    //Đơn nháp hoặc đơn huỷ không có số liệu nên ẩn hẳn cột, hiện số 0
     //sẽ khiến người đọc tưởng bán hàng không tốn vốn.
     const hasCost = detail?.status === "CONFIRMED";
-    const grossProfit = Number(detail?.totalAmount ?? 0) - Number(detail?.totalCost ?? 0);
-    const marginPercent = Number(detail?.totalAmount ?? 0) > 0
-        ? (grossProfit / Number(detail?.totalAmount)) * 100
-        : 0;
 
     const openCreate = () => {
         setEditing(null);
@@ -320,45 +316,30 @@ const SalesOrdersPage = () => {
                                         {/* Giá vốn chỉ có sau khi xác nhận đơn, lúc hàng thật sự rời kho.
                                             Đơn nháp mà hiện cột 0 thì gây hiểu nhầm là bán không có vốn. */}
                                         {hasCost && <th scope="col" className="wc-num">Giá vốn</th>}
-                                        {hasCost && <th scope="col" className="wc-num">Lãi gộp</th>}
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {(detail.items ?? []).map(item => {
-                                        const lineProfit = Number(item.amount) - Number(item.costAmount ?? 0);
-                                        return (
-                                            <tr key={item.id}>
-                                                <td>{item.product?.code}</td>
-                                                <td>{item.product?.name}</td>
-                                                <td className="wc-num">{formatQuantity(item.quantity)}</td>
-                                                <td className="wc-num">{formatMoney(item.unitPrice)}</td>
-                                                <td className="wc-num">{formatMoney(item.amount)}</td>
-                                                {hasCost && <td className="wc-num">{formatMoney(item.costAmount ?? 0)}</td>}
-                                                {hasCost &&
-                                                    <td className={`wc-num ${lineProfit < 0 ? 'text-danger' : ''}`}>
-                                                        {formatMoney(lineProfit)}
-                                                    </td>
-                                                }
-                                            </tr>
-                                        );
-                                    })}
+                                    {(detail.items ?? []).map(item => (
+                                        <tr key={item.id}>
+                                            <td>{item.product?.code}</td>
+                                            <td>{item.product?.name}</td>
+                                            <td className="wc-num">{formatQuantity(item.quantity)}</td>
+                                            <td className="wc-num">{formatMoney(item.unitPrice)}</td>
+                                            <td className="wc-num">{formatMoney(item.amount)}</td>
+                                            {hasCost && <td className="wc-num">{formatMoney(item.costAmount ?? 0)}</td>}
+                                        </tr>
+                                    ))}
                                 </tbody>
                                 <tfoot>
                                     <tr>
                                         <td colSpan={4} className="wc-num fw-semibold">Tổng cộng</td>
                                         <td className="wc-num fw-bold">{formatMoney(detail.totalAmount)}</td>
                                         {hasCost && <td className="wc-num fw-bold">{formatMoney(detail.totalCost)}</td>}
-                                        {hasCost &&
-                                            <td className={`wc-num fw-bold ${grossProfit < 0 ? 'text-danger' : 'text-success'}`}>
-                                                {formatMoney(grossProfit)}
-                                            </td>
-                                        }
                                     </tr>
                                 </tfoot>
                             </Table>
                             {hasCost &&
                                 <div className="small text-muted mb-2">
-                                    Tỷ suất lãi gộp: <b>{marginPercent.toFixed(1)}%</b> doanh thu.
                                     Giá vốn tính theo bình quân gia quyền tại thời điểm xuất kho.
                                 </div>
                             }

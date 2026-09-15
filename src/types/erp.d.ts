@@ -124,7 +124,8 @@ interface ISalesOrder {
     orderDate: string;
     status: TOrderStatus;
     totalAmount: string;
-    //Tổng giá vốn hàng bán, ghi lúc xác nhận đơn. Lãi gộp = totalAmount - totalCost
+    //Tổng giá vốn hàng bán, ghi lúc xác nhận đơn khi hàng thật sự rời kho.
+    //Đơn còn nháp hoặc đã huỷ thì bằng "0".
     totalCost: string;
     note: string | null;
     customerId: number;
@@ -181,45 +182,27 @@ interface IAttendance {
 //khỏi cả database, API lẫn giao diện. Phân hệ nhân sự chỉ quản lý hồ sơ,
 //phòng ban, chức danh và chấm công.
 
-//===== BÁO CÁO LÃI LỖ =====
+//===== BÁO CÁO GIÁ VỐN =====
 
-//Một dòng trong bảng lãi lỗ gom theo sản phẩm
-interface IProfitByProduct {
+//Một dòng trong bảng giá vốn, gom theo sản phẩm
+interface ICogsByProduct {
     productId: number;
     code: string;
     name: string;
     unit: string;
-    quantity: string;
-    revenue: string;
-    cost: string;
-    profit: string;
-    marginPercent: number;
+    quantity: string; //tổng số lượng đã bán trong kỳ
+    unitCost: string; //đơn giá vốn bình quân trong kỳ
+    cost: string;     //tổng giá vốn
 }
 
-//Một dòng trong bảng lãi lỗ theo từng đơn bán
-interface IProfitByOrder {
-    id: number;
-    code: string;
-    orderDate: string;
-    customer?: Pick<IPartner, "id" | "code" | "name">;
-    warehouse?: Pick<IWarehouse, "id" | "code" | "name">;
-    revenue: string;
-    cost: string;
-    profit: string;
-    marginPercent: number;
-}
-
-//Kết quả trả về của GET /reports/profit
-interface IProfitReport {
+//Kết quả trả về của GET /reports/cogs
+interface ICogsReport {
     summary: {
-        orderCount: number;
-        revenue: string;
+        productCount: number;
+        quantity: string;
         cost: string;
-        profit: string;
-        marginPercent: number;
     };
-    products: IProfitByProduct[];
-    orders: IProfitByOrder[];
+    products: ICogsByProduct[];
     //Các tháng có đơn đã xác nhận, dạng YYYY-MM, mới nhất trước.
     //Back-end trả kèm để dựng ô chọn tháng, khỏi phải gọi thêm một lượt.
     months: string[];

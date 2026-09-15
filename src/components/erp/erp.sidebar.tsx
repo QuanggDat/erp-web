@@ -9,7 +9,7 @@ const MENU: { group: string; items: { href: string; label: string }[] }[] = [
         group: "Tổng quan",
         items: [
             { href: "/erp", label: "Bảng điều khiển" },
-            { href: "/erp/profit-report", label: "Báo cáo lãi lỗ" },
+            { href: "/erp/cogs-report", label: "Báo cáo giá vốn" },
         ],
     },
     {
