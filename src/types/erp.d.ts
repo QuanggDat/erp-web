@@ -182,28 +182,36 @@ interface IAttendance {
 //khỏi cả database, API lẫn giao diện. Phân hệ nhân sự chỉ quản lý hồ sơ,
 //phòng ban, chức danh và chấm công.
 
-//===== BÁO CÁO GIÁ VỐN =====
+//===== BÁO CÁO GIÁ TRỊ TỒN KHO =====
 
-//Một dòng trong bảng giá vốn, gom theo sản phẩm
-interface ICogsByProduct {
+//Một dòng tồn: một mặt hàng tại một kho
+interface IInventoryValueItem {
     productId: number;
     code: string;
     name: string;
     unit: string;
-    quantity: string; //tổng số lượng đã bán trong kỳ
-    unitCost: string; //đơn giá vốn bình quân trong kỳ
-    cost: string;     //tổng giá vốn
+    warehouseId: number;
+    warehouseName: string;
+    quantity: string; //số lượng đang tồn, có thể âm nếu sổ sách sai
+    avgCost: string;  //đơn giá vốn bình quân gia quyền
+    value: string;    //quantity nhân avgCost
+    updatedAt: string;
 }
 
-//Kết quả trả về của GET /reports/cogs
-interface ICogsReport {
+//Giá trị tồn gom theo từng kho
+interface IInventoryValueByWarehouse {
+    warehouseId: number;
+    warehouseName: string;
+    value: string;
+}
+
+//Kết quả trả về của GET /reports/inventory-value
+interface IInventoryValueReport {
     summary: {
-        productCount: number;
-        quantity: string;
-        cost: string;
+        lineCount: number;     //số cặp sản phẩm-kho, không phải số sản phẩm
+        totalValue: string;
+        negativeCount: number; //số dòng tồn âm, cần kiểm kê lại
     };
-    products: ICogsByProduct[];
-    //Các tháng có đơn đã xác nhận, dạng YYYY-MM, mới nhất trước.
-    //Back-end trả kèm để dựng ô chọn tháng, khỏi phải gọi thêm một lượt.
-    months: string[];
+    items: IInventoryValueItem[];
+    byWarehouse: IInventoryValueByWarehouse[];
 }

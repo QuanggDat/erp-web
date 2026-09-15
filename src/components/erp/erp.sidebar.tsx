@@ -9,7 +9,6 @@ const MENU: { group: string; items: { href: string; label: string }[] }[] = [
         group: "Tổng quan",
         items: [
             { href: "/erp", label: "Bảng điều khiển" },
-            { href: "/erp/cogs-report", label: "Báo cáo giá vốn" },
         ],
     },
     {
@@ -25,6 +24,7 @@ const MENU: { group: string; items: { href: string; label: string }[] }[] = [
         items: [
             { href: "/erp/warehouses", label: "Danh sách kho" },
             { href: "/erp/stocks", label: "Tồn kho" },
+            { href: "/erp/inventory-value", label: "Giá trị tồn kho" },
             { href: "/erp/stock-movements", label: "Sổ nhập xuất" },
         ],
     },
