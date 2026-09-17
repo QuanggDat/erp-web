@@ -182,70 +182,41 @@ interface IAttendance {
 //khỏi cả database, API lẫn giao diện. Phân hệ nhân sự chỉ quản lý hồ sơ,
 //phòng ban, chức danh và chấm công.
 
-//===== BÁO CÁO GIÁ TRỊ TỒN KHO =====
-
-//Một dòng tồn: một mặt hàng tại một kho
-interface IInventoryValueItem {
-    productId: number;
-    code: string;
-    name: string;
-    unit: string;
-    warehouseId: number;
-    warehouseName: string;
-    quantity: string; //số lượng đang tồn, có thể âm nếu sổ sách sai
-    avgCost: string;  //đơn giá vốn bình quân gia quyền
-    value: string;    //quantity nhân avgCost
-    updatedAt: string;
-}
-
-//Giá trị tồn gom theo từng kho
-interface IInventoryValueByWarehouse {
-    warehouseId: number;
-    warehouseName: string;
-    value: string;
-}
-
-//Kết quả trả về của GET /reports/inventory-value
-interface IInventoryValueReport {
-    summary: {
-        lineCount: number;     //số cặp sản phẩm-kho, không phải số sản phẩm
-        totalValue: string;
-        negativeCount: number; //số dòng tồn âm, cần kiểm kê lại
-    };
-    items: IInventoryValueItem[];
-    byWarehouse: IInventoryValueByWarehouse[];
-}
-
-//===== BÁO CÁO GIÁ VỐN THEO THÁNG =====
+//===== BÁO CÁO GIÁ MUA BÌNH QUÂN THEO THÁNG =====
 
 //Một dòng: một sản phẩm trong một tháng.
-//Sản phẩm bán ở ba tháng thì có ba dòng.
-interface ICogsMonthlyRow {
+//Sản phẩm nhập ở ba tháng thì có ba dòng.
+interface IPurchaseCostMonthlyRow {
     month: string;    //dạng YYYY-MM
     productId: number;
     code: string;
     name: string;
     unit: string;
-    quantity: string; //số lượng bán trong tháng đó
-    unitCost: string; //đơn giá vốn bình quân trong tháng đó
-    cost: string;     //tổng giá vốn
+    quantity: string; //số lượng nhập trong tháng đó
+    amount: string;   //tổng tiền mua trong tháng đó
+    unitCost: string; //đơn giá bình quân gia quyền: amount chia quantity
+    //Tháng không nhập lô nào thì back-end vẫn trả về một dòng, lấy đơn giá
+    //của tháng gần nhất có nhập, với quantity và amount bằng 0. Giao diện
+    //hiển thị nhạt màu để khỏi hiểu nhầm là đã mua hàng trong tháng này.
+    isCarriedOver: boolean;
 }
 
-//Tổng giá vốn của từng tháng
-interface ICogsByMonth {
+//Tổng tiền mua của từng tháng
+interface IPurchaseCostByMonth {
     month: string;
-    cost: string;
+    amount: string;
 }
 
-//Kết quả trả về của GET /reports/cogs-monthly
-interface ICogsMonthlyReport {
+//Kết quả trả về của GET /reports/purchase-cost-monthly
+interface IPurchaseCostMonthlyReport {
     summary: {
-        rowCount: number;
+        rowCount: number;     //số cặp tháng-sản phẩm, không phải số sản phẩm
         quantity: string;
-        cost: string;
+        amount: string;
+        avgUnitCost: string;  //đơn giá bình quân chung của cả báo cáo
     };
-    rows: ICogsMonthlyRow[];
-    byMonth: ICogsByMonth[];
-    //Các tháng có đơn đã xác nhận, mới nhất trước
+    rows: IPurchaseCostMonthlyRow[];
+    byMonth: IPurchaseCostByMonth[];
+    //Các tháng có phát sinh, mới nhất trước
     months: string[];
 }
